@@ -23,6 +23,7 @@ namespace PatientRecords.Data
             // Add your customizations after calling base.OnModelCreating(builder);
         }
 
-        public DbSet<Human> Human { get; set; }
+        public DbSet<RobotDoctor> RobotDoctors { get; set; }
+        public DbSet<Human> Humans { get; set; }
     }
 }

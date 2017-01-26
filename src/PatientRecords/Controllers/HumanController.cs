@@ -22,18 +22,21 @@ namespace PatientRecords.Controllers
         // GET: Human
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Human.ToListAsync());
+            var humans = _context.Humans.Include(h => h.RobotDoctor);
+            return View(humans);
         }
 
         // GET: Human/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var human = await _context.Human.SingleOrDefaultAsync(m => m.ID == id);
+            Human human = await _context.Humans
+                .Include(h => h.RobotDoctor)
+                .SingleOrDefaultAsync(h => h.ID == id);
             if (human == null)
             {
                 return NotFound();
@@ -45,7 +48,22 @@ namespace PatientRecords.Controllers
         // GET: Human/Create
         public IActionResult Create()
         {
+            ViewBag.RobotDoctors = GetListOfRobotDoctors();
             return View();
+        }
+
+        private IEnumerable<SelectListItem> GetListOfRobotDoctors(int selected = -1)
+        {
+            var tmp = _context.RobotDoctors.ToList();
+            //Create authors list for <select> dropdown
+            return tmp
+                .OrderBy(rb => rb.ModelNumber)
+                .Select(rb => new SelectListItem
+                {
+                    Text = String.Format("{0}: {1}", rb.ModelNumber, rb.PreferredName),
+                    Value = rb.RobotDoctorId.ToString(),
+                    Selected = rb.RobotDoctorId == selected
+                });
         }
 
         // POST: Human/Create
@@ -72,7 +90,7 @@ namespace PatientRecords.Controllers
                 return NotFound();
             }
 
-            var human = await _context.Human.SingleOrDefaultAsync(m => m.ID == id);
+            var human = await _context.Humans.SingleOrDefaultAsync(m => m.ID == id);
             if (human == null)
             {
                 return NotFound();
@@ -123,7 +141,7 @@ namespace PatientRecords.Controllers
                 return NotFound();
             }
 
-            var human = await _context.Human.SingleOrDefaultAsync(m => m.ID == id);
+            var human = await _context.Humans.SingleOrDefaultAsync(m => m.ID == id);
             if (human == null)
             {
                 return NotFound();
@@ -137,15 +155,15 @@ namespace PatientRecords.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var human = await _context.Human.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Human.Remove(human);
+            var human = await _context.Humans.SingleOrDefaultAsync(m => m.ID == id);
+            _context.Humans.Remove(human);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool HumanExists(int id)
         {
-            return _context.Human.Any(e => e.ID == id);
+            return _context.Humans.Any(e => e.ID == id);
         }
     }
 }

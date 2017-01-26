@@ -20,5 +20,8 @@ namespace PatientRecords.Models
         public string FirstName { get; set; }
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+        [Display(Name ="Robot Doctor")]
+        public int RobotDoctorId { get; set; }
+        public RobotDoctor RobotDoctor { get; set; }
     }
 }
