@@ -71,11 +71,11 @@ namespace PatientRecords.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,DateOfBirth,FirstName,LastName,SocialSecurityNumber")] Human human)
+        public async Task<IActionResult> Create([Bind("RobotDoctorId,DateOfBirth,FirstName,LastName,SocialSecurityNumber")] Human human)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(human);
+                _context.Humans.Add(human);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -90,11 +90,12 @@ namespace PatientRecords.Controllers
                 return NotFound();
             }
 
-            var human = await _context.Humans.SingleOrDefaultAsync(m => m.ID == id);
+            Human human = _context.Humans.Single(m => m.ID = id);
             if (human == null)
             {
                 return NotFound();
             }
+            ViewBag.RobotDoctors = GetListOfRobotDoctors();
             return View(human);
         }
 
@@ -103,7 +104,7 @@ namespace PatientRecords.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,DateOfBirth,FirstName,LastName,SocialSecurityNumber")] Human human)
+        public async Task<IActionResult> Edit(int id, [Bind("RobotDoctorId,DateOfBirth,FirstName,LastName,SocialSecurityNumber")] Human human)
         {
             if (id != human.ID)
             {
@@ -112,22 +113,10 @@ namespace PatientRecords.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(human);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!HumanExists(human.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                human.ID = id;
+                _context.Humans.Attach(human);
+                _context.Entry(human).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(human);

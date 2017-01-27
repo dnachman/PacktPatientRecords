@@ -24,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.SocialSecurityNumber)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RobotDoctor.PreferredName)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -41,6 +44,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RobotDoctor.PreferredName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
